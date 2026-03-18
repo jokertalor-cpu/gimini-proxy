@@ -1,0 +1,88 @@
+body{
+    background-color: rgba(204, 154, 16, 0.719);
+}
+.menu-bar{
+    display:flex;
+    align-items: center;
+    background-color: rgba(117, 84, 24, 0.589);
+    justify-content: space-between;
+    border:3px solid gray;
+    padding:15px 50px;
+
+}
+.logo{
+    color: brown;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 20px 20px 20px;
+
+}
+.class-bar{
+    list-style: none;
+    display: flex;
+    
+}
+.class-bar li{
+    margin-left: 30px;
+    display:block;
+    block-size: auto;
+}
+.class-bar a{
+    text-decoration: none;
+    color: brown;
+}
+.class-bar a:hover{
+    color:rgba(207, 142, 142, 0.986)
+}
+.book-all{
+       display: flex;
+       flex-direction:row;
+       background-color: rgb(201, 192, 66);
+
+}
+.book{
+      width: 100px;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      margin: 30px;
+      padding: 10px;
+      transition: 0.1s ease;
+}
+.book img:hover{
+    transform:scale(1.1);
+   
+}
+.book p{
+    text-decoration: none;
+    font-style: italic;
+}
+ .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #333; 
+    min-width: 160px;
+    list-style: none;
+    padding: 10px;
+    z-index: 1;
+}
+
+
+.dropdown-menu li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 8px 12px;
+}
+
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+
+.dropdown-menu li a:hover {
+    background-color: #555;
+}
+
+        
