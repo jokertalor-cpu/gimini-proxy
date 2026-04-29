@@ -372,3 +372,80 @@ async function deleteSeasonalIcon(id, imageUrl) {
 document.addEventListener('DOMContentLoaded', () => {
     loadSeasonalIcons();
 });
+// Banner တင်ရန် (ပိုကောင်းအောင် ပြင်ဆင်ထားသော ဗားရှင်း)
+async function uploadBanner() {
+    const file = document.getElementById('banner-file').files[0];
+    let imageUrl = document.getElementById('banner-url').value.trim();
+    const linkUrl = document.getElementById('banner-link').value.trim();
+
+    if (!file && !imageUrl) {
+        return alert("ပုံဖိုင် ရွေးပါ သို့မဟုတ် Image URL ထည့်ပါ");
+    }
+
+    try {
+        if (file) {
+            const fileName = `banners/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+            const { error: uploadError } = await supabase.storage
+                .from('book-assets')
+                .upload(fileName, file);
+            
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage
+                .from('book-assets')
+                .getPublicUrl(fileName);
+            
+            imageUrl = publicUrl;
+        }
+
+        // Insert with better fields
+        const { error: dbError } = await supabase.from('banners').insert([{
+            image_url: imageUrl,
+            link_url: linkUrl || null,
+            created_at: new Date().toISOString()
+        }]);
+
+        if (dbError) throw dbError;
+
+        alert("Banner အောင်မြင်စွာ တင်ပြီးပါပြီ!");
+        
+        // Form ကို ရှင်းပါ
+        document.getElementById('banner-file').value = '';
+        document.getElementById('banner-url').value = '';
+        document.getElementById('banner-link').value = '';
+        
+        loadBannersAdmin();   // ချက်ချင်း refresh
+    } catch (err) {
+        console.error(err);
+        alert("Error: " + err.message);
+    }
+}
+// ၂။ လက်ရှိ Banner များပြရန်
+async function loadBannersAdmin() {
+    const { data, error } = await supabase.from('banners').select('*').order('id', { ascending: false });
+    const listBody = document.getElementById('banner-list');
+    if (error || !listBody) return;
+
+    listBody.innerHTML = data.map(bn => `
+        <tr>
+            <td><img src="${bn.image_url}" style="width: 150px; height: 60px; object-fit: cover; border-radius: 4px;"></td>
+            <td>${bn.link_url || '-'}</td>
+            <td>
+                <button class="btn btn-delete" onclick="deleteBanner(${bn.id})"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ၃။ Banner ဖျက်ရန်
+async function deleteBanner(id) {
+    if (!confirm("ဒီပုံကို ဖျက်မှာ သေချာလား?")) return;
+    const { error } = await supabase.from('banners').delete().eq('id', id);
+    if (error) alert(error.message);
+    else loadBannersAdmin();
+}
+
+// Page load တဲ့အခါ function ကို ခေါ်ထားပါ
+document.addEventListener('DOMContentLoaded', () => {
+    loadBannersAdmin();
+});
